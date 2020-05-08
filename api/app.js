@@ -1,11 +1,9 @@
-/**
- * Helper functions that when passed a request will return a
- * boolean indicating if the request uses that HTTP method,
- * header, host or referrer.
- */
 const WorkerResponse = require('./response')
+
+const DEBUG = false
 const Method = method => req =>
   req.method.toLowerCase() === method.toLowerCase()
+
 const Connect = Method('connect')
 const Delete = Method('delete')
 const Get = Method('get')
@@ -39,22 +37,26 @@ const LoadParams = (path, base) => req => {
 
 const Path = regExp => req => {
   const url = new URL(req.url)
-  var expr = AddSlash(regExp)
   const path = AddSlash(url.pathname)
   const alphanum = new RegExp(/\:[\w\d]+/, "gi")
-  const newPath = expr.replace(alphanum, alphanum.source.toString())
-  if (expr != newPath) {
-    expr = new RegExp(newPath.replace(/\\:/g, ''))
+  var expr = AddSlash(regExp)
+  const newExpr = expr.replace(alphanum, alphanum.source.toString())
+  if (DEBUG) {
+    console.log("url", req.url)
+    console.log("path", path)
+    console.log("newExpr", newExpr)
+  }
+  if (expr != newExpr) {
+    expr = new RegExp(newExpr.replace(/\\:/g, ''))
   }
   const match = path.match(expr) || []
+  if (DEBUG) {
+    console.log("match",match)
+  }
   return match[0] === path
 }
 
-/**
- * The Router handles determines which handler is matched given the
- * conditions present for each request.
- */
-class Router {
+class App {
   constructor(base) {
     this.base = base ? base.replace(/\/$/, "") : ""
     this.routes = []
@@ -109,7 +111,7 @@ class Router {
     return this.handle([], handler, LoadParams(url, this.base))
   }
 
-  route(req) {
+  render(req) {
     const route = this.resolve(req)
     if (route) {
       const response = new WorkerResponse()
@@ -127,10 +129,6 @@ class Router {
     })
   }
 
-  /**
-   * resolve returns the matching route for a request that returns
-   * true for all conditions (if any).
-   */
   resolve(req) {
     return this.routes.find(r => {
       if (!r.conditions || (Array.isArray(r) && !r.conditions.length)) {
@@ -146,4 +144,4 @@ class Router {
   }
 }
 
-module.exports = Router
+module.exports = App

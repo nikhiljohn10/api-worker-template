@@ -13,9 +13,7 @@ class WorkerResponse {
     }
     return new Response(JSON.stringify({error: statusText}), {
       status: status,
-      headers: {
-        'content-type': 'application/json',
-      },
+      headers: { 'content-type': 'application/json' }
     })
   }
 
