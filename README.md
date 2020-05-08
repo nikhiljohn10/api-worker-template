@@ -28,9 +28,13 @@ wrangler publish
 *Structure:*
 
 [`./index.js`](https://github.com/nikhiljohn10/api-worker-template/blob/master/index.js) : This is the entry point for the API
+
 [`./api/app.js`](https://github.com/nikhiljohn10/api-worker-template/blob/master/api/app.js) : This file helpwith the logical routing and execution
+
 [`./api/controllers.js`](https://github.com/nikhiljohn10/api-worker-template/blob/master/api/controllers.js) : This file contains methods that are attached to routes
+
 [`./api/response.js`](https://github.com/nikhiljohn10/api-worker-template/blob/master/api/response.js) : This file have various response models
+
 [`./api/routes.js`](https://github.com/nikhiljohn10/api-worker-template/blob/master/api/routes.js) : This file contain and loads all the routes in to API
 
 You can use `controllers.js` and `routes.js` to easily create an API.
