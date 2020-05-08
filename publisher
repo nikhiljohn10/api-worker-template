@@ -1,0 +1,114 @@
+#!/usr/bin/env bash
+WAIT=2
+
+function scriptUsage() {
+	cat << EOF
+Publish from remote storage and observe file changes
+
+Usage: ./publisher [-h|-n|-s DIR]
+
+Options:
+	 -h|--help                  Displays this help
+	 -n|--no-npm-install        Publish without npm install
+	 -s|--source-dir [DIR]      Source directory name
+	 -w|--wait [NUMBER]      	Waiting time in seconds (default: 4 seconds)
+EOF
+}
+
+startTimer() {
+	start=$(date +%s.%N)
+}
+	
+endTimer() {
+	duration=$( echo "$(date +%s.%N)-$start" | bc | cut -b1-5 )
+}
+
+fetchFiles() {
+	startTimer
+	files=$(find . -type f \( -name "*.*" ! -path "\./\.*" ! -path "\./publisher" \) \
+		| git check-ignore --verbose --non-matching --stdin \
+		| sed -n -e 's,\t./,\t,' -e 's,^::\t*,,p')
+	if [ -z "$files" ]; then
+		echo "No files found in the given directory"
+		exit 1
+	fi
+	endTimer
+	echo "Directory scanned in $duration seconds"
+}
+
+function parseParams() {
+	local param
+	while [[ $# -gt 0 ]]; do
+		param="$1"
+		shift
+		case $param in
+			-h | --help)
+				scriptUsage
+				exit 0
+				;;
+			-n | --no-npm-install)
+				noNpmInstall=true
+				;;
+			-s | --source-dir)
+				srcDir=$1
+				if [ -z "$srcDir" ]; then
+					echo "Expecting a directory name after -s option."
+					exit 1
+				else
+					if [ -d "$srcDir" ]; then
+						cd $srcDir
+					else
+						echo "The given directory does not exists."
+						exit 1
+					fi
+				fi
+				shift
+				;;
+			-w | --wait)
+				WAIT=$1
+				if ! [[ $WAIT =~ '^[0-9]+$' ]]; then
+				   echo "Error: Wait given is not a number" >&2; exit 1
+				fi
+				;;
+			*)
+			echo "Invalid parameter was provided: $param."
+			exit 1
+			;;
+		esac
+	done
+}
+
+function publish() {
+	startTimer
+	echo "[$(date)]: Publishing worker"
+	wrangler publish
+	currentHash=$newHash
+	endTimer
+}
+
+function checkHash() {
+	newHash=$(sha1sum $files | sha1sum | awk '{print $1}')
+	if [[ "$newHash" != "$currentHash" ]]; then
+		publish
+		echo "Published worker in $duration seconds."
+		echo "Scanning for file change..."
+	fi
+}
+
+function initScript() {
+	if [[ -z ${noNpmInstall-} ]]; then
+		npm install --no-bin-links
+	fi
+	while true; do
+		checkHash
+		sleep $WAIT
+	done
+}
+
+function main() {
+	fetchFiles
+	parseParams "$@"
+	initScript
+}
+
+main "$@"
