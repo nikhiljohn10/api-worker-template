@@ -23,6 +23,15 @@ Once you are ready, you can publish your code by running the following command:
 wrangler publish
 ```
 
+#### Routing
+
+`index.js` have the code `const app = new App('/api/v1')`. This will set the base path to `/api/v1`. This means, your base url will be `example.com/api/v1`
+
+`/user/:userId` matchs `"https://example.com/api/v1/users/nikhiljohn10"` and respond with `{ userId: "nikhiljohn10"}`
+
+`app.method_name(url_path, handler_method)` is the route loader method. `method_name` can be `connect, delete, head, options, patch, post, put, trace`, `url_path` is a regular expression and `handler_method` is executed by passing request and worker response object as arguments. So handler should be taking those parameters. Eg: `(req, res) => res.json(req)` will send back the request object received as json.
+
+
 #### How to manage API
 
 *Structure:*
