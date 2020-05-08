@@ -55,12 +55,12 @@ const Path = regExp => req => {
  * conditions present for each request.
  */
 class Router {
-  constructor() {
+  constructor(base) {
     this.base = base ? base.replace(/\/$/, "") : ""
     this.routes = []
   }
 
-  handle(conditions, handler) {
+  handle(conditions, handler, params) {
     this.routes.push({
       conditions,
       handler,
