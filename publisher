@@ -11,7 +11,7 @@ Options:
 	 -h|--help                  Displays this help
 	 -n|--no-npm-install        Publish without npm install
 	 -s|--source-dir [DIR]      Source directory name
-	 -w|--wait [NUMBER]      	Waiting time in seconds (default: 4 seconds)
+	 -w|--wait [NUMBER]      	Waiting time in seconds (default: 2 seconds)
 EOF
 }
 
