@@ -1,9 +1,11 @@
 const App = require('./api/app')
-const routes = require('./api/routes')
+const Routes = require('./api/routes')
+
+// Set base path as /api/v1 => example.com/api/v1 
+const app = new App('/api/v1') 
+Routes.load(app)
 
 async function handleRequest(request) {
-    const app = new App('/api/v1')
-    routes.load(app)
     return await app.render(request)
 }
 

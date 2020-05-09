@@ -1,4 +1,4 @@
-name = "router"
+name = "api"
 type = "webpack"
 
 account_id = ""

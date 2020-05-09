@@ -80,6 +80,7 @@ function parseParams() {
 
 function publish() {
 	startTimer
+	echo
 	echo "[$(date)]: Publishing worker"
 	wrangler publish
 	currentHash=$newHash
@@ -91,7 +92,7 @@ function checkHash() {
 	if [[ "$newHash" != "$currentHash" ]]; then
 		publish
 		echo "Published worker in $duration seconds."
-		echo "Scanning for file change..."
+		printf "Scanning for file change..."
 	fi
 }
 

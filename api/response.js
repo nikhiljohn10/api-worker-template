@@ -1,29 +1,32 @@
-class WorkerResponse {
-  constructor() {
-    this.htmlHeader = { status: 200, headers: { "content-type": "text/html" } }
-    this.jsonHeader = { status: 200, headers: { "content-type": "application/json" } }
-  }
-
-  async status(status, message = ""){
+const json_header = { 'Content-Type': 'application/json' }
+module.exports = {
+  json: (body = {}) => {
+    return new Response(JSON.stringify(body), {
+      status: 200,
+      headers: json_header
+    })
+  },
+  image: async (data, type = "png") => {
+    let mime = await fetch('https://ddnslab.tech/status/?mime=' + type, { headers: json_header })
+      .then(response => response.json())
+      .then(data => data.mime.mime_code)
+      .catch((error) => { console.error('Error:', error); return "image/png"; })
+    let headers = new Headers({ 'Content-Type': mime })
+    let image = new Buffer(data, 'base64')
+    let response = new Response(image, { status: 200, headers: headers })
+    return response
+  },
+  error: async (status, message = "") => {
     var statusText = message
-    if(!statusText) {
-      await fetch('https://nikz.in/statuscode?code='+status)
+    if (!statusText) {
+      await fetch('https://ddnslab.tech/status/?code=' + status)
         .then(response => response.json())
-        .then(function(data) { statusText = data })
+        .then(function(data) { statusText = data.status.status_text })
+        .catch((error) => { console.error('Error:', error); statusText = error; })
     }
-    return new Response(JSON.stringify({error: statusText}), {
+    return new Response(JSON.stringify({ error: { code: status, message: statusText }}), {
       status: status,
-      headers: { 'content-type': 'application/json' }
+      headers: json_header
     })
   }
-
-  html(body = '<h1></h1>') {
-    return new Response(body, this.htmlHeader)
-  }
-
-  json(body = {}) {
-    return new Response(JSON.stringify(body), this.jsonHeader)
-  }
 }
-
-module.exports = WorkerResponse

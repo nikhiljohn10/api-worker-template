@@ -1,9 +1,7 @@
-const WorkerResponse = require('./response')
+const response = require('./response')
 
-const DEBUG = false
 const Method = method => req =>
   req.method.toLowerCase() === method.toLowerCase()
-
 const Connect = Method('connect')
 const Delete = Method('delete')
 const Get = Method('get')
@@ -41,18 +39,10 @@ const Path = regExp => req => {
   const alphanum = new RegExp(/\:[\w\d]+/, "gi")
   var expr = AddSlash(regExp)
   const newExpr = expr.replace(alphanum, alphanum.source.toString())
-  if (DEBUG) {
-    console.log("url", req.url)
-    console.log("path", path)
-    console.log("newExpr", newExpr)
-  }
   if (expr != newExpr) {
     expr = new RegExp(newExpr.replace(/\\:/g, ''))
   }
   const match = path.match(expr) || []
-  if (DEBUG) {
-    console.log("match",match)
-  }
   return match[0] === path
 }
 
@@ -114,19 +104,11 @@ class App {
   render(req) {
     const route = this.resolve(req)
     if (route) {
-      const response = new WorkerResponse()
       var request = req
       request['params'] = route.params(request)
       return route.handler(request, response)
     }
-
-    return new Response('<h1>404: Page Not Found</h1>', {
-      status: 404,
-      statusText: 'not found',
-      headers: {
-        'content-type': 'text/html',
-      },
-    })
+    return response.error(404, "No such route found")
   }
 
   resolve(req) {
