@@ -1,3 +1,5 @@
+<p align="center"><img src="https://api.nikz.in/svg/256-fff-W-0ff-f0f" alt="API Worker Template"></p>
+
 ## API Worker Template for Cloudflare Workers
 
 [![wrangler](https://img.shields.io/badge/wrangler-1.8.4-success)](https://github.com/cloudflare/wrangler) &nbsp;
