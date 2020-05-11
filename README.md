@@ -1,4 +1,4 @@
-<p align="center"><img src="https://api.nikz.in/svg/256-fff-W-0ff-f0f" alt="API Worker Template"></p>
+<p align="center"><img src="https://api.nikz.in/icon/256-fff-W-0ff-f0f" alt="API Worker Template"></p>
 
 ## API Worker Template for Cloudflare Workers
 
